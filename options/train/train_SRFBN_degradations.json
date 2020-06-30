@@ -2,34 +2,36 @@
     "mode": "sr",
     "use_cl": true,
     "gpu_ids": [0],
-    "validation_frequency": 200,
+    "validation_frequency": 30,
     "scale": 2,
     "is_train": true,
     "use_chop": true,
     "rgb_range": 255,
     "self_ensemble": false,
-    "save_image": false,
-
+    "save_image": true,
     "datasets": {
         "train": {
             "mode": "HR",
-            "dataroot_HR": "/home/samim/Desktop/ms/sr-datasets/prototyping-dataset/x2/train_HR",
+            "dataroot_HR": "/home/samim/Desktop/ms/real-world-sr/datasets/DF2K/clean/train/",
             "dataroot_LR": "/home/samim/Desktop/ms/sr-datasets/prototyping-dataset/x2/train_LR",
             "data_type": "img",
-            "n_workers": 8,
-            "batch_size": 16,
+            "n_workers": 10,
+            "batch_size": 32,
             "LR_size": 64,
             "use_flip": true,
             "use_rot": true,
             "noise": ".",
-            "blur_kernel_path" : "/home/samim/Desktop/ms/SRFBN_CVPR19/datasets/filters/klens_3"
+            "blur_kernel_path" : "/home/samim/Desktop/ms/SRFBN_CVPR19/datasets/filters/klens_3",
+            "noise_patch_path" : "/home/samim/Desktop/ms/SRFBN_CVPR19/datasets/dped_noise_patches/iphone"
         },
         "val": {
-            "mode": "LRHR",
-            "dataroot_HR": "/home/samim/Desktop/ms/sr-datasets/prototyping-dataset/x2/valid_HR",
+            "mode": "HR",
+            "n_workers": 10,
+            "dataroot_HR": "/home/samim/Desktop/ms/real-world-sr/datasets/DF2K/clean/valid/",
             "dataroot_LR": "/home/samim/Desktop/ms/sr-datasets/prototyping-dataset/x2/valid_LR",
             "data_type": "img",
             "blur_kernel_path" : "/home/samim/Desktop/ms/SRFBN_CVPR19/datasets/filters/klens_3"
+            
         }
     },
 

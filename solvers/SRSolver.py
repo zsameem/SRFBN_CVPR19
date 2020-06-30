@@ -20,7 +20,7 @@ class SRSolver(BaseSolver):
         self.LR = self.Tensor()
         self.HR = self.Tensor()
         self.SR = None
-
+        self.validation_frequency = opt['validation_frequency']
         self.records = {'train_loss': [],
                         'val_loss': [],
                         'psnr': [],
@@ -86,7 +86,9 @@ class SRSolver(BaseSolver):
 
         if need_HR:
             target = batch['HR']
+            # print('batch[\'HR\'] size = {}'.format(target.size()))
             self.HR.resize_(target.size()).copy_(target)
+            # print('self.HR size = {}'.format(self.HR.size()))
 
 
     def train_step(self):
@@ -101,6 +103,10 @@ class SRSolver(BaseSolver):
             split_HR = self.HR.narrow(0, i*sub_batch_size, sub_batch_size)
             if self.use_cl:
                 outputs = self.model(split_LR)
+                # This inline for loop implements feedback mechanism
+                # The network outputs a list of images for each time step
+                # In the simple case the loss is computed by comparing each 
+                # output image with the same HR image.
                 loss_steps = [self.criterion_pix(sr, split_HR) for sr in outputs]
                 for step in range(len(loss_steps)):
                     loss_sbatch += self.cl_weights[step] * loss_steps[step]
@@ -370,16 +376,23 @@ class SRSolver(BaseSolver):
 
     def save_current_log(self):
         data_frame = pd.DataFrame(
-            data={'train_loss': self.records['train_loss']
-                , 'val_loss': self.records['val_loss']
+            data={
+                'val_loss': self.records['val_loss']
                 , 'psnr': self.records['psnr']
                 , 'ssim': self.records['ssim']
-                , 'lr': self.records['lr']
-                  },
-            index=range(1, self.cur_epoch + 1)
+                  }
         )
-        data_frame.to_csv(os.path.join(self.records_dir, 'train_records.csv'),
-                          index_label='epoch')
+        data_frame.to_csv(os.path.join(self.records_dir, 'validation_records.csv'),
+                          index_label='validation_epoch')
+        
+        data_frame = pd.DataFrame(
+            data={
+                'train_loss': self.records['train_loss'],
+                'lr': self.records['lr']
+                  }
+        )
+        data_frame.to_csv(os.path.join(self.records_dir, 'training_records.csv'),
+                          index_label='train_epoch')
 
 
     def print_network(self):

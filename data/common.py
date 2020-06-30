@@ -2,9 +2,10 @@
 import random
 import numpy as np
 import scipy.misc as misc
+import scipy.io as io
 import imageio
 from tqdm import tqdm
-
+import glob
 import torch
 
 IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP']
@@ -187,3 +188,19 @@ def modcrop(img_in, scale):
     else:
         raise ValueError('Wrong img ndim: [%d].' % img.ndim)
     return img
+
+
+def get_filters(filters_path):
+    """
+    filters should be saved as mat files or npy files. read all the filters
+    in the dir into list and return it.
+    """
+    all_filters = glob.glob(filters_path+'/*.mat')
+    assert(all_filters is not None)
+    filter_bank = []
+    for f in all_filters:
+        kernel = io.loadmat(f)['kernel']
+        filter_bank.append(kernel)
+    print("========================")
+    print("Filter bank has {} filters".format(len(filter_bank)))
+    return filter_bank

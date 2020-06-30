@@ -79,47 +79,48 @@ def main():
                                                     NUM_EPOCH,
                                                     sum(train_loss_list)/len(train_set)))
 
-        print('===> Validating...',)
+        if (epoch % opt['validation_frequency'] == 0):
+            print('===> Validating...',)
 
-        psnr_list = []
-        ssim_list = []
-        val_loss_list = []
+            psnr_list = []
+            ssim_list = []
+            val_loss_list = []
 
-        for iter, batch in enumerate(val_loader):
-            solver.feed_data(batch)
-            iter_loss = solver.test()
-            val_loss_list.append(iter_loss)
+            for iter, batch in enumerate(val_loader):
+                solver.feed_data(batch)
+                iter_loss = solver.test()
+                val_loss_list.append(iter_loss)
 
-            # calculate evaluation metrics
-            visuals = solver.get_current_visual()
-            psnr, ssim = util.calc_metrics(visuals['SR'], visuals['HR'], crop_border=scale)
-            psnr_list.append(psnr)
-            ssim_list.append(ssim)
+                # calculate evaluation metrics
+                visuals = solver.get_current_visual()
+                psnr, ssim = util.calc_metrics(visuals['SR'], visuals['HR'], crop_border=scale)
+                psnr_list.append(psnr)
+                ssim_list.append(ssim)
 
-            if opt["save_image"]:
-                solver.save_current_visual(epoch, iter)
+                if opt["save_image"]:
+                    solver.save_current_visual(epoch, iter)
 
-        solver_log['records']['val_loss'].append(sum(val_loss_list)/len(val_loss_list))
-        solver_log['records']['psnr'].append(sum(psnr_list)/len(psnr_list))
-        solver_log['records']['ssim'].append(sum(ssim_list)/len(ssim_list))
+            solver_log['records']['val_loss'].append(sum(val_loss_list)/len(val_loss_list))
+            solver_log['records']['psnr'].append(sum(psnr_list)/len(psnr_list))
+            solver_log['records']['ssim'].append(sum(ssim_list)/len(ssim_list))
 
-        # record the best epoch
-        epoch_is_best = False
-        if solver_log['best_pred'] < (sum(psnr_list)/len(psnr_list)):
-            solver_log['best_pred'] = (sum(psnr_list)/len(psnr_list))
-            epoch_is_best = True
-            solver_log['best_epoch'] = epoch
+            # record the best epoch
+            epoch_is_best = False
+            if solver_log['best_pred'] < (sum(psnr_list)/len(psnr_list)):
+                solver_log['best_pred'] = (sum(psnr_list)/len(psnr_list))
+                epoch_is_best = True
+                solver_log['best_epoch'] = epoch
 
-        print("[%s] PSNR: %.2f   SSIM: %.4f   Loss: %.6f   Best PSNR: %.2f in Epoch: [%d]" % (val_set.name(),
-                                                                                              sum(psnr_list)/len(psnr_list),
-                                                                                              sum(ssim_list)/len(ssim_list),
-                                                                                              sum(val_loss_list)/len(val_loss_list),
-                                                                                              solver_log['best_pred'],
-                                                                                              solver_log['best_epoch']))
+            print("[%s] PSNR: %.2f   SSIM: %.4f   Loss: %.6f   Best PSNR: %.2f in Epoch: [%d]" % (val_set.name(),
+                                                                                                sum(psnr_list)/len(psnr_list),
+                                                                                                sum(ssim_list)/len(ssim_list),
+                                                                                                sum(val_loss_list)/len(val_loss_list),
+                                                                                                solver_log['best_pred'],
+                                                                                                solver_log['best_epoch']))
 
-        solver.set_current_log(solver_log)
-        solver.save_checkpoint(epoch, epoch_is_best)
-        solver.save_current_log()
+            solver.set_current_log(solver_log)
+            solver.save_checkpoint(epoch, epoch_is_best)
+            solver.save_current_log()
 
         # update lr
         solver.update_learning_rate(epoch)

@@ -10,6 +10,7 @@ def create_dataloader(dataset, dataset_opt):
         batch_size = 1
         shuffle = False
         num_workers = 1
+        # num_workers = dataset_opt['n_workers']
     return torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=True)
 
@@ -19,6 +20,8 @@ def create_dataset(dataset_opt):
         from data.LR_dataset import LRDataset as D
     elif mode == 'LRHR':
         from data.LRHR_dataset import LRHRDataset as D
+    elif mode=='HR':
+        from data.HR_dataset import HRDataset as D
     else:
         raise NotImplementedError("Dataset [%s] is not recognized." % mode)
     dataset = D(dataset_opt)

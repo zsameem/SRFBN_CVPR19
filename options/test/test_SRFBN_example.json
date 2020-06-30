@@ -3,7 +3,7 @@
     "use_cl": true,
     "gpu_ids": [0],
 
-    "scale": 4,
+    "scale": 2,
     "degradation": "BI",
     "is_train": false,
     "use_chop": true,
@@ -11,19 +11,7 @@
     "self_ensemble": false,
 
     "datasets": {
-        "test_set1": {
-            "mode": "LRHR",
-            "dataroot_HR": "./results/HR/Set5/x4",
-            "dataroot_LR": "./results/LR/LRBI/Set5/x4",
-            "data_type": "img"
-        },
-//        "test_set2": {
-//             "mode": "LRHR",
-//             "dataroot_HR": "./results/HR/Set14/x4",
-//             "dataroot_LR": "./results/LR/LRBI/Set14/x4",
-//             "data_type": "img"
-//         },
-        "test_set3": {
+        "klens-norect": {
              "mode": "LR",
              "dataroot_LR": "./results/LR/MyImage",
              "data_type": "img"
@@ -31,7 +19,7 @@
     },
 
     "networks": {
-        "which_model": "SRFBN",
+        "which_model": "SRFBN-GAUSSIAN-NOISE-SIGMA-0-3",
         "num_features": 64,
         "in_channels": 3,
         "out_channels": 3,
@@ -40,6 +28,6 @@
     },
 
     "solver": {
-        "pretrained_path": "./models/SRFBN_x4_BI.pth"
+        "pretrained_path": "experiments/SRFBN_in3f64_x2/epochs/best_ckp.pth"
     }
 }
