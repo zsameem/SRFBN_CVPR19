@@ -108,6 +108,24 @@ def define_net(opt):
                                   num_features=opt['num_features'], num_steps=opt['num_steps'], num_groups=opt['num_groups'],
                                   upscale_factor=opt['scale'])
 
+    # Residual Channel Attention Network Implementation
+    elif which_model.find('RCAN') >= 0:
+        from .rcan import RCAN
+        net = RCAN(args_num_features=opt['num_features'], 
+                                  args_num_rg=opt['args_n_resgroups'],
+                                  args_num_rcab=opt['args_n_resblocks'],
+                                  args_scale=opt['scale'],
+                                  )
+
+    # Residual Dual-Attention network for SR implementation
+    elif which_model.find('RDAN') >= 0:
+        from .dan import RDAN
+        net = RDAN(args_num_features=opt['num_features'], 
+                                  args_num_rg=opt['args_n_resgroups'],
+                                  args_num_rcab=opt['args_n_resblocks'],
+                                  args_scale=opt['scale'],
+                                  )
+
     elif which_model.find('GMFN') >= 0:
         from .gmfn_arch import GMFN
         net = GMFN(in_channels=opt['in_channels'], out_channels=opt['out_channels'],

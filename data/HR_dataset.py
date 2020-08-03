@@ -46,6 +46,7 @@ class HRDataset(data.Dataset):
             assert (self.n_noise_patches > 0)
             print("Number of noise patches = {}".format(self.n_noise_patches))
 
+
     def __getitem__(self, idx):
         hr, hr_path = self._load_file(idx)
         lr = None
@@ -105,7 +106,8 @@ class HRDataset(data.Dataset):
             valid_hr_patch = hr_patch[int(k_h/2):-int(k_h/2), int(k_w/2):-int(k_w/2), :]
             
             noise_patch = self.get_noise_patch(lr.shape)
-            lr += noise_patch
+            noise_scaling = np.random.random()*3 + 1
+            lr += noise_scaling*noise_patch
             lr = np.clip(lr, 0, 255)
             lr, valid_hr_patch = common.augment([lr, valid_hr_patch])
             # lr = misc.imresize(hr, 1/self.scale, interp='bicubic')

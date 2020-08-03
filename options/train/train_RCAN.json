@@ -1,0 +1,64 @@
+{
+    "mode": "sr",
+    "use_cl": false,
+    "gpu_ids": [0],
+
+    "scale": 2,
+    "is_train": true,
+    "use_chop": true,
+    "rgb_range": 1,
+    "self_ensemble": false,
+    "save_image": true,
+    "validation_frequency": 50,
+    "datasets": {
+        "train": {
+            "mode": "LRHR",
+            "dataroot_HR": "/home/samim/Desktop/ms/CycleISP/results/df2k_noisy_subsampled_2x/train/clean",
+            "dataroot_LR": "/home/samim/Desktop/ms/CycleISP/results/df2k_noisy_subsampled_2x/train/noisy",
+            "data_type": "img",
+            "n_workers": 4,
+            "batch_size": 16,
+            "LR_size": 48,
+            "use_flip": true,
+            "use_rot": true,
+            "noise": "."
+        },
+        "val": {
+            "mode": "LRHR",
+            "dataroot_HR": "/home/samim/Desktop/ms/CycleISP/results/df2k_noisy_subsampled_2x/validation/clean",
+            "dataroot_LR": "/home/samim/Desktop/ms/CycleISP/results/df2k_noisy_subsampled_2x/validation/noisy",
+            "data_type": "img"
+        }
+    },
+
+    "networks": {
+        "which_model": "RCAN",
+        "num_features": 64,
+        "in_channels": 3,
+        "out_channels": 3,
+        "num_steps": 4,
+        "args_n_resgroups": 10,
+        "args_n_resblocks":20,
+        "rgb_range": 1
+    },
+
+    "solver": {
+        "type": "ADAM",
+        "learning_rate": 0.0001,
+        "weight_decay": 0,
+        "lr_scheme": "MultiStepLR",
+        "lr_steps": [100, 200, 300, 400],
+        "lr_gamma": 0.5,
+        "loss_type": "l1",
+        "manual_seed": 0,
+        "num_epochs": 500,
+        "skip_threshold": 3,
+        "split_batch": 2,
+        "save_ckp_step": 50,
+        "save_vis_step": 50,
+        "pretrain": null,
+        "cl_weights": [1.0, 1.0, 1.0, 1.0],
+        "use_feedback_loss":false,
+        "initialization_method":"pytorch"
+    }
+}

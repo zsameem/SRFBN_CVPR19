@@ -38,6 +38,10 @@ class SRSolver(BaseSolver):
                 assert self.cl_weights, "[Error] 'cl_weights' is not be declared when 'use_cl' is true"
 
             # set loss
+            if self.train_opt['use_feedback_loss']:
+                self.use_feedback_loss = True
+            else:
+                self.use_feedback_loss = False
             loss_type = self.train_opt['loss_type']
             if loss_type == 'l1':
                 self.criterion_pix = nn.L1Loss()
@@ -75,8 +79,12 @@ class SRSolver(BaseSolver):
             print("optimizer: ", self.optimizer)
             print("lr_scheduler milestones: %s   gamma: %f"%(self.scheduler.milestones, self.scheduler.gamma))
 
-    def _net_init(self, init_type='kaiming'):
+    def _net_init(self, init_type):
         print('==> Initializing the network using [%s]'%init_type)
+
+        if init_type =='pytorch':
+            return
+        
         init_weights(self.model, init_type)
 
 
@@ -94,7 +102,15 @@ class SRSolver(BaseSolver):
     def train_step(self):
         self.model.train()
         self.optimizer.zero_grad()
-
+        output = self.model(self.LR)
+        if not self.use_feedback_loss:
+            loss = self.criterion_pix(output, self.HR)
+            loss.backward()
+            self.optimizer.step()
+            self.last_epoch_loss = loss
+            self.model.eval()
+            return loss
+        
         loss_batch = 0.0
         sub_batch_size = int(self.LR.size(0) / self.split_batch)
         for i in range(self.split_batch):
@@ -315,7 +331,8 @@ class SRSolver(BaseSolver):
                 load_func(checkpoint)
 
         else:
-            self._net_init()
+            assert self.train_opt['initialization_method'] is not None
+            self._net_init(self.train_opt['initialization_method'])
 
 
     def get_current_visual(self, need_np=True, need_HR=True):
