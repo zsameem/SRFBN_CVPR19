@@ -13,18 +13,18 @@
     "datasets": {
         "klens-norect": {
              "mode": "LR",
-             "dataroot_LR": "./results/LR/MyImage",
+             "dataroot_LR": "./results/LR/klens-norect",
              "data_type": "img"
          }
     },
 
     "networks": {
-        "which_model": "SRFBN-GAUSSIAN-NOISE-SIGMA-0-3",
-        "num_features": 64,
+        "which_model": "SRFBN-KLENS-1",
+        "num_features": 32,
         "in_channels": 3,
         "out_channels": 3,
         "num_steps": 4,
-        "num_groups": 6
+        "num_groups": 3
     },
 
     "solver": {
