@@ -107,9 +107,9 @@ class SRSolver(BaseSolver):
             loss = self.criterion_pix(output, self.HR)
             loss.backward()
             self.optimizer.step()
-            self.last_epoch_loss = loss
+            self.last_epoch_loss = float(loss)
             self.model.eval()
-            return loss
+            return float(loss)
         
         loss_batch = 0.0
         sub_batch_size = int(self.LR.size(0) / self.split_batch)
